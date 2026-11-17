@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/sabriemin/disc-cleaner/actions/workflows/build.yml"><img alt="build" src="https://img.shields.io/github/actions/workflow/status/sabriemin/disc-cleaner/build.yml?branch=main&style=flat-square&label=build" /></a>
   <img alt="platform" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0b0b0d?style=flat-square" />
   <img alt=".NET" src="https://img.shields.io/badge/.NET-8-512bd4?style=flat-square" />
   <img alt="languages" src="https://img.shields.io/badge/languages-English%20%7C%20T%C3%BCrk%C3%A7e-ffa41b?style=flat-square" />
@@ -149,8 +150,8 @@ This opens the app and starts scanning that folder right away.
 You need the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) on Windows.
 
 ```bash
-git clone <this repository>
-cd DiskTemizleyici
+git clone https://github.com/sabriemin/disc-cleaner.git
+cd disc-cleaner
 dotnet test
 dotnet run --project src/DiskTemizleyici.App
 ```

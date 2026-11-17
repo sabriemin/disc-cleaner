@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/sabriemin/disc-cleaner/actions/workflows/build.yml"><img alt="derleme" src="https://img.shields.io/github/actions/workflow/status/sabriemin/disc-cleaner/build.yml?branch=main&style=flat-square&label=derleme" /></a>
   <img alt="platform" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0b0b0d?style=flat-square" />
   <img alt=".NET" src="https://img.shields.io/badge/.NET-8-512bd4?style=flat-square" />
   <img alt="diller" src="https://img.shields.io/badge/diller-T%C3%BCrk%C3%A7e%20%7C%20English-ffa41b?style=flat-square" />
@@ -99,6 +100,8 @@ Uygulama açılır ve o klasörü taramaya hemen başlar.
 Windows'ta [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) gerekir.
 
 ```bash
+git clone https://github.com/sabriemin/disc-cleaner.git
+cd disc-cleaner
 dotnet test
 dotnet run --project src/DiskTemizleyici.App
 ```
