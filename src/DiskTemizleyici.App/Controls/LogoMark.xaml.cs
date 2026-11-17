@@ -1,0 +1,11 @@
+using System.Windows.Controls;
+
+namespace DiskTemizleyici.App.Controls;
+
+public partial class LogoMark : UserControl
+{
+    public LogoMark()
+    {
+        InitializeComponent();
+    }
+}

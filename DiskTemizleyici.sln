@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A3BB3D77-FE81-4F58-8289-889B272EE4A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiskTemizleyici.Core", "src\DiskTemizleyici.Core\DiskTemizleyici.Core.csproj", "{879C6E08-D82F-4DC9-B8AC-D9A275053E54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiskTemizleyici.App", "src\DiskTemizleyici.App\DiskTemizleyici.App.csproj", "{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E95EFCBF-ABE6-447E-83F8-A29321DB8314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiskTemizleyici.Tests", "tests\DiskTemizleyici.Tests\DiskTemizleyici.Tests.csproj", "{498A3C3C-A792-43D4-B381-6E91D1B109F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EC184F6A-F140-45D4-87F9-31DE79B8800E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetGen", "tools\AssetGen\AssetGen.csproj", "{431B3970-B6B7-41B0-BEEC-06179068C7AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{879C6E08-D82F-4DC9-B8AC-D9A275053E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{879C6E08-D82F-4DC9-B8AC-D9A275053E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{879C6E08-D82F-4DC9-B8AC-D9A275053E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{879C6E08-D82F-4DC9-B8AC-D9A275053E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498A3C3C-A792-43D4-B381-6E91D1B109F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498A3C3C-A792-43D4-B381-6E91D1B109F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498A3C3C-A792-43D4-B381-6E91D1B109F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498A3C3C-A792-43D4-B381-6E91D1B109F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431B3970-B6B7-41B0-BEEC-06179068C7AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431B3970-B6B7-41B0-BEEC-06179068C7AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431B3970-B6B7-41B0-BEEC-06179068C7AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431B3970-B6B7-41B0-BEEC-06179068C7AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{879C6E08-D82F-4DC9-B8AC-D9A275053E54} = {A3BB3D77-FE81-4F58-8289-889B272EE4A9}
+		{9AC80FD3-84D9-47E6-8EAC-19F4B0E80B51} = {A3BB3D77-FE81-4F58-8289-889B272EE4A9}
+		{498A3C3C-A792-43D4-B381-6E91D1B109F8} = {E95EFCBF-ABE6-447E-83F8-A29321DB8314}
+		{431B3970-B6B7-41B0-BEEC-06179068C7AC} = {EC184F6A-F140-45D4-87F9-31DE79B8800E}
+	EndGlobalSection
+EndGlobal

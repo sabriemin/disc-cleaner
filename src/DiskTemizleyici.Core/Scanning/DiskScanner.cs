@@ -1,0 +1,176 @@
+using System.IO.Enumeration;
+
+namespace DiskTemizleyici.Core.Scanning;
+
+public sealed class ScanResult
+{
+    public required DirNode Root { get; init; }
+    public required List<LargeFile> LargestFiles { get; init; }
+    public required TimeSpan Elapsed { get; init; }
+    public required long DirectoriesScanned { get; init; }
+    public required long InaccessibleDirectories { get; init; }
+}
+
+/// <summary>
+/// Walks a folder tree and adds up sizes.
+/// <list type="bullet">
+/// <item>Junctions and symbolic links are not followed, so nothing is counted twice
+/// (e.g. "Application Data" inside the user profile).</item>
+/// <item>"Online-only" cloud placeholder files are counted separately, because they do not use disk space.</item>
+/// </list>
+/// </summary>
+public sealed class DiskScanner
+{
+    // File attributes that mark a cloud placeholder whose data is not on this disk.
+    private const FileAttributes RecallOnDataAccess = (FileAttributes)0x00400000;
+    private const FileAttributes RecallOnOpen = (FileAttributes)0x00040000;
+    private const FileAttributes CloudOnlyMask = RecallOnDataAccess | RecallOnOpen | FileAttributes.Offline;
+
+    private const int ParallelDepth = 8;
+
+    private long _files;
+    private long _dirs;
+    private long _bytes;
+    private long _denied;
+    private string _currentPath = "";
+
+    public int LargeFileCount { get; init; } = 200;
+
+    public long FilesScanned => Interlocked.Read(ref _files);
+    public long DirectoriesScanned => Interlocked.Read(ref _dirs);
+    public long BytesScanned => Interlocked.Read(ref _bytes);
+    public string CurrentPath => Volatile.Read(ref _currentPath);
+
+    public ScanResult Scan(string rootPath, CancellationToken ct = default)
+    {
+        if (!Directory.Exists(rootPath)) throw new DirectoryNotFoundException(rootPath);
+
+        _files = _dirs = _bytes = _denied = 0;
+        var started = DateTime.UtcNow;
+        var tracker = new LargeFileTracker(LargeFileCount);
+        var root = new DirNode(Path.GetFullPath(rootPath), null);
+
+        ScanDirectory(root, 0, tracker, ct);
+
+        return new ScanResult
+        {
+            Root = root,
+            LargestFiles = tracker.ToSortedList(),
+            Elapsed = DateTime.UtcNow - started,
+            DirectoriesScanned = DirectoriesScanned,
+            InaccessibleDirectories = Interlocked.Read(ref _denied),
+        };
+    }
+
+    private readonly record struct Entry(string Name, bool IsDirectory, long Length, FileAttributes Attributes, DateTime LastWrite);
+
+    private static readonly EnumerationOptions Options = new()
+    {
+        IgnoreInaccessible = true,
+        RecurseSubdirectories = false,
+        ReturnSpecialDirectories = false,
+        AttributesToSkip = 0,
+    };
+
+    private void ScanDirectory(DirNode node, int depth, LargeFileTracker tracker, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        Interlocked.Increment(ref _dirs);
+        Volatile.Write(ref _currentPath, node.FullPath);
+
+        List<Entry> entries;
+        try
+        {
+            var enumerable = new FileSystemEnumerable<Entry>(
+                node.FullPath,
+                (ref FileSystemEntry e) => new Entry(
+                    e.FileName.ToString(), e.IsDirectory, e.Length, e.Attributes,
+                    e.LastWriteTimeUtc.UtcDateTime),
+                Options);
+            entries = enumerable.ToList();
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
+        {
+            node.AccessDenied = true;
+            Interlocked.Increment(ref _denied);
+            return;
+        }
+
+        long ownSize = 0, ownFiles = 0, cloudSize = 0, cloudFiles = 0;
+        var subDirs = new List<DirNode>();
+
+        foreach (var e in entries)
+        {
+            var full = Path.Join(node.FullPath, e.Name);
+            if (e.IsDirectory)
+            {
+                var child = new DirNode(full, node);
+                if ((e.Attributes & FileAttributes.ReparsePoint) != 0 && IsLink(full))
+                {
+                    child.IsLink = true; // junction / symlink: do not follow, would double count
+                    node.AddChild(child);
+                    continue;
+                }
+                node.AddChild(child);
+                subDirs.Add(child);
+            }
+            else if ((e.Attributes & CloudOnlyMask) != 0)
+            {
+                cloudSize += e.Length;
+                cloudFiles++;
+            }
+            else
+            {
+                ownSize += e.Length;
+                ownFiles++;
+                tracker.Offer(full, e.Length, e.LastWrite);
+            }
+        }
+
+        Interlocked.Add(ref _files, ownFiles + cloudFiles);
+        Interlocked.Add(ref _bytes, ownSize);
+
+        if (depth < ParallelDepth && subDirs.Count > 1)
+        {
+            Parallel.ForEach(subDirs, new ParallelOptions { CancellationToken = ct },
+                child => ScanDirectory(child, depth + 1, tracker, ct));
+        }
+        else
+        {
+            foreach (var child in subDirs) ScanDirectory(child, depth + 1, tracker, ct);
+        }
+
+        long size = ownSize, files = ownFiles, cSize = cloudSize, cFiles = cloudFiles;
+        foreach (var child in subDirs)
+        {
+            size += child.Size;
+            files += child.FileCount;
+            cSize += child.CloudOnlySize;
+            cFiles += child.CloudOnlyCount;
+        }
+
+        node.OwnFilesSize = ownSize;
+        node.Size = size;
+        node.FileCount = files;
+        node.CloudOnlySize = cSize;
+        node.CloudOnlyCount = cFiles;
+        node.SortChildren();
+    }
+
+    /// <summary>
+    /// A reparse point is a "link" (junction, symlink, mount point) when it has a link target.
+    /// Cloud-sync folders (OneDrive, CrossDevice) are reparse points too, but have no link target,
+    /// so they are scanned normally.
+    /// </summary>
+    private static bool IsLink(string path)
+    {
+        try
+        {
+            return new DirectoryInfo(path).LinkTarget is not null;
+        }
+        catch
+        {
+            return true; // unknown reparse point: safer not to follow
+        }
+    }
+}

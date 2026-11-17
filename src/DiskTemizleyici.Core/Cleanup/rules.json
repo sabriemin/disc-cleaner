@@ -1,0 +1,171 @@
+[
+  {
+    "id": "recycle-bin",
+    "mode": "RecycleBin",
+    "risk": "Caution",
+    "name": { "tr": "Geri Dönüşüm Kutusu", "en": "Recycle Bin" },
+    "description": {
+      "tr": "Geri Dönüşüm Kutusu'ndaki dosyalar hâlâ yer kaplar. Boşaltınca geri getirilemezler.",
+      "en": "Files in the Recycle Bin still take up space. Once emptied they cannot be restored."
+    }
+  },
+  {
+    "id": "user-temp",
+    "mode": "Contents",
+    "risk": "Safe",
+    "minAgeDays": 1,
+    "paths": [ "%TEMP%" ],
+    "name": { "tr": "Kullanıcı geçici dosyaları", "en": "User temporary files" },
+    "description": {
+      "tr": "Programların geride bıraktığı geçici dosyalar. Son 24 saatte değişenler ve kullanımdaki dosyalar atlanır.",
+      "en": "Temporary files left behind by programs. Files changed in the last 24 hours and files in use are skipped."
+    }
+  },
+  {
+    "id": "windows-temp",
+    "mode": "Contents",
+    "risk": "Safe",
+    "minAgeDays": 1,
+    "needsAdmin": true,
+    "paths": [ "%WINDIR%\\Temp" ],
+    "name": { "tr": "Windows geçici dosyaları", "en": "Windows temporary files" },
+    "description": {
+      "tr": "Windows ve kurulum programlarının geçici dosyaları. Çoğu için yönetici izni gerekir.",
+      "en": "Temporary files from Windows and installers. Most need administrator rights."
+    }
+  },
+  {
+    "id": "crash-dumps",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%LOCALAPPDATA%\\CrashDumps", "%PROGRAMDATA%\\Microsoft\\Windows\\WER\\ReportArchive", "%PROGRAMDATA%\\Microsoft\\Windows\\WER\\ReportQueue" ],
+    "name": { "tr": "Çökme raporları", "en": "Crash reports" },
+    "description": {
+      "tr": "Programlar çöktüğünde oluşan döküm dosyaları ve hata raporları.",
+      "en": "Dump files and error reports created when programs crash."
+    }
+  },
+  {
+    "id": "shader-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%LOCALAPPDATA%\\D3DSCache", "%LOCALAPPDATA%\\NVIDIA\\DXCache", "%LOCALAPPDATA%\\NVIDIA\\GLCache", "%LOCALAPPDATA%\\AMD\\DxCache", "%LOCALAPPDATA%\\AMD\\DxcCache" ],
+    "name": { "tr": "Ekran kartı gölgelendirici önbelleği", "en": "Graphics shader cache" },
+    "description": {
+      "tr": "DirectX, NVIDIA ve AMD gölgelendirici önbelleği. Oyunlar yeniden oluşturur; ilk açılışta kısa takılmalar olabilir.",
+      "en": "DirectX, NVIDIA and AMD shader caches. Games rebuild them; the first launch may stutter briefly."
+    }
+  },
+  {
+    "id": "steam-shader-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%ProgramFiles(x86)%\\Steam\\steamapps\\shadercache" ],
+    "name": { "tr": "Steam gölgelendirici önbelleği", "en": "Steam shader cache" },
+    "description": {
+      "tr": "Steam oyunlarının gölgelendirici önbelleği. Steam gerekirse yeniden indirir veya oluşturur.",
+      "en": "Shader cache of Steam games. Steam re-downloads or rebuilds it when needed."
+    }
+  },
+  {
+    "id": "browser-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\*\\Cache",
+      "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\*\\Code Cache",
+      "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\*\\Cache",
+      "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\*\\Code Cache",
+      "%LOCALAPPDATA%\\BraveSoftware\\Brave-Browser\\User Data\\*\\Cache",
+      "%LOCALAPPDATA%\\Opera Software\\Opera Stable\\Cache",
+      "%LOCALAPPDATA%\\Opera Software\\Opera GX Stable\\Cache",
+      "%LOCALAPPDATA%\\Mozilla\\Firefox\\Profiles\\*\\cache2"
+    ],
+    "name": { "tr": "Tarayıcı önbelleği", "en": "Browser cache" },
+    "description": {
+      "tr": "Chrome, Edge, Brave, Opera ve Firefox önbelleği. Şifreler, geçmiş ve oturumlar silinmez. En iyi sonuç için tarayıcıyı kapatın.",
+      "en": "Cache of Chrome, Edge, Brave, Opera and Firefox. Passwords, history and logins are not touched. Close the browser for best results."
+    }
+  },
+  {
+    "id": "npm-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%LOCALAPPDATA%\\npm-cache", "%LOCALAPPDATA%\\Yarn\\Cache" ],
+    "name": { "tr": "npm / Yarn önbelleği", "en": "npm / Yarn cache" },
+    "description": {
+      "tr": "JavaScript paket önbelleği. Gerekince paketler yeniden indirilir.",
+      "en": "JavaScript package cache. Packages are downloaded again when needed."
+    }
+  },
+  {
+    "id": "pip-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%LOCALAPPDATA%\\pip\\Cache" ],
+    "name": { "tr": "pip önbelleği", "en": "pip cache" },
+    "description": {
+      "tr": "Python paket önbelleği. Gerekince paketler yeniden indirilir.",
+      "en": "Python package cache. Packages are downloaded again when needed."
+    }
+  },
+  {
+    "id": "nuget-http-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [ "%LOCALAPPDATA%\\NuGet\\v3-cache", "%LOCALAPPDATA%\\NuGet\\plugins-cache" ],
+    "name": { "tr": "NuGet indirme önbelleği", "en": "NuGet download cache" },
+    "description": {
+      "tr": ".NET paketlerinin indirme önbelleği.",
+      "en": "Download cache of .NET packages."
+    }
+  },
+  {
+    "id": "gradle-cache",
+    "mode": "Contents",
+    "risk": "Caution",
+    "paths": [ "%USERPROFILE%\\.gradle\\caches" ],
+    "name": { "tr": "Gradle önbelleği", "en": "Gradle cache" },
+    "description": {
+      "tr": "Android / Java projelerinin bağımlılık önbelleği. Sonraki derleme her şeyi yeniden indirir ve uzun sürer.",
+      "en": "Dependency cache of Android / Java projects. The next build downloads everything again and takes longer."
+    }
+  },
+  {
+    "id": "windows-update-download",
+    "mode": "Contents",
+    "risk": "Caution",
+    "needsAdmin": true,
+    "minAgeDays": 7,
+    "paths": [ "%WINDIR%\\SoftwareDistribution\\Download" ],
+    "name": { "tr": "Windows Update indirmeleri", "en": "Windows Update downloads" },
+    "description": {
+      "tr": "Kurulmuş güncellemelerin indirme dosyaları. Bekleyen bir güncelleme varsa önce onu tamamlayın. Yönetici izni gerekir.",
+      "en": "Downloaded files of installed updates. Finish any pending update first. Needs administrator rights."
+    }
+  },
+  {
+    "id": "cs2-autosaves",
+    "mode": "Files",
+    "risk": "Caution",
+    "pattern": "AutoSave*",
+    "keepNewest": 5,
+    "paths": [ "%USERPROFILE%\\AppData\\LocalLow\\Colossal Order\\Cities Skylines II\\Saves" ],
+    "name": { "tr": "Cities: Skylines II otomatik kayıtları", "en": "Cities: Skylines II autosaves" },
+    "description": {
+      "tr": "Oyun birkaç dakikada bir otomatik kayıt alır ve eskileri silmez. En yeni 5 kayıt korunur; elle alınan kayıtlara dokunulmaz.",
+      "en": "The game autosaves every few minutes and never removes old ones. The newest 5 are kept; manual saves are not touched."
+    }
+  },
+  {
+    "id": "cs2-cache",
+    "mode": "Contents",
+    "risk": "Caution",
+    "paths": [ "%USERPROFILE%\\AppData\\LocalLow\\Colossal Order\\Cities Skylines II\\.cache" ],
+    "name": { "tr": "Cities: Skylines II önbelleği", "en": "Cities: Skylines II cache" },
+    "description": {
+      "tr": "Oyunun ve modların önbelleği. Oyun yeniden oluşturur; sonraki açılış uzun sürebilir.",
+      "en": "Cache of the game and its mods. The game rebuilds it; the next launch may take longer."
+    }
+  }
+]

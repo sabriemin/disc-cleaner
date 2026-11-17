@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Renders the app logo (src/DiskTemizleyici.App/Controls/LogoMark.xaml) into
+    the Windows icon and the README logo. Run from the repository root:
+    dotnet run (project: tools/AssetGen)
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiskTemizleyici.App\DiskTemizleyici.App.csproj" />
+  </ItemGroup>
+
+</Project>
