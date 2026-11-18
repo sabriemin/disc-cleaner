@@ -60,6 +60,7 @@ public sealed class Loc : INotifyPropertyChanged
         ["GlassNeedsWin11"] = ("Cam görünüm için Windows 11 gerekir.", "Glass needs Windows 11."),
         ["AccentColor"] = ("Vurgu rengi", "Accent colour"),
         ["Language"] = ("Dil", "Language"),
+        ["VersionLabel"] = ("sürüm", "version"),
         ["AdminTip"] = ("Yönetici olarak yeniden başlat. Windows klasörlerini taramak ve temizlemek için gerekir.", "Restart as administrator. Needed to scan and clean Windows folders."),
         ["Minimize"] = ("Simge durumuna küçült", "Minimise"),
         ["Maximize"] = ("Ekranı kapla", "Maximise"),

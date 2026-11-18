@@ -129,6 +129,7 @@
                             Visibility="{Binding IsAdmin, Converter={StaticResource Vis}, ConverterParameter=invert}" />
                     <ToggleButton x:Name="SettingsToggle" Style="{StaticResource IconToggle}" Content="&#xE713;" Margin="0,8,10,0"
                                   WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding [Settings], Source={x:Static l:Loc.I}}"
+                                  AutomationProperties.Name="{Binding [Settings], Source={x:Static l:Loc.I}}"
                                   IsHitTestVisible="{Binding IsOpen, ElementName=SettingsPopup, Converter={StaticResource Not}}" />
                     <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Click="OnMinimize" WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{Binding [Minimize], Source={x:Static l:Loc.I}}" />
@@ -179,6 +180,14 @@
                                                      IsChecked="{Binding LanguageCode, Converter={StaticResource Eq}, ConverterParameter=en}" />
                                     </StackPanel>
                                 </Border>
+
+                                <Border Height="1" Background="{DynamicResource SubtleBorderBrush}" Margin="0,18,0,12" />
+                                <TextBlock x:Name="VersionLine" Style="{StaticResource Faint}">
+                                    <Run Text="{Binding [AppTitle], Source={x:Static l:Loc.I}, Mode=OneWay}" />
+                                    <Run Text="·" />
+                                    <Run Text="{Binding [VersionLabel], Source={x:Static l:Loc.I}, Mode=OneWay}" />
+                                    <Run Text="{Binding AppVersion, Mode=OneWay}" />
+                                </TextBlock>
                             </StackPanel>
                         </Border>
                     </Grid>

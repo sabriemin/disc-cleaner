@@ -63,6 +63,14 @@ public sealed partial class MainViewModel : ObservableObject
 
     public bool IsAdmin { get; } = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
+    /// <summary>"0.2.0": release builds get it from the v0.2.0 tag (see .github/workflows/build.yml).</summary>
+    public string AppVersion { get; } =
+        (System.Reflection.Assembly.GetEntryAssembly()
+            ?.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+            .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
+            .FirstOrDefault()?.InformationalVersion ?? "0.0.0")
+        .Split('+')[0]; // the SDK appends "+<commit>"; keep the readable part
+
     // ---------------------------------------------------------------- state
 
     [ObservableProperty]
