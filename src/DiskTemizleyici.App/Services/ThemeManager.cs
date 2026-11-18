@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace DiskTemizleyici.App.Services;
 
 /// <summary>One selectable accent colour.</summary>
-public sealed class AccentOption
+public sealed class AccentOption : System.ComponentModel.INotifyPropertyChanged
 {
     public AccentOption(string id, string nameTr, string nameEn, Color light, Color main, bool darkText)
     {
@@ -18,7 +18,12 @@ public sealed class AccentOption
         DarkText = darkText;
         Brush = new LinearGradientBrush(light, main, 45);
         Brush.Freeze();
+        // the swatch tooltips show the name, so they must follow a language change
+        Localization.Loc.I.LanguageChanged += (_, _) =>
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Name)));
     }
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 
     public string Id { get; }
     public string NameTr { get; }

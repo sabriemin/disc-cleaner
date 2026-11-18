@@ -1,12 +1,17 @@
 using DiskTemizleyici.App.Localization;
 using DiskTemizleyici.Core;
+using DiskTemizleyici.Core.Cleanup;
 using DiskTemizleyici.Core.Scanning;
 
 namespace DiskTemizleyici.App.ViewModels;
 
 public sealed class LargeFileViewModel
 {
-    public LargeFileViewModel(LargeFile file) => File = file;
+    public LargeFileViewModel(LargeFile file)
+    {
+        File = file;
+        Critical = CriticalFiles.Classify(file.FullPath);
+    }
 
     public LargeFile File { get; }
     public string Name => Path.GetFileName(File.FullPath);
@@ -15,6 +20,18 @@ public sealed class LargeFileViewModel
     public string SizeText => ByteFormat.Format(File.Size, Loc.I.Culture);
     public string ModifiedText => File.LastWriteTime.ToLocalTime().ToString("d MMM yyyy", Loc.I.Culture);
     public string Extension => Path.GetExtension(File.FullPath).TrimStart('.').ToUpperInvariant();
+
+    /// <summary>".mp4" (lower case, "" without an extension); used by the file-type filter, grouped like the scanner.</summary>
+    public string ExtensionKey => FileCategories.ExtensionOf(File.FullPath);
+
+    /// <summary>A whole disk (WSL, Docker, virtual machine) or a Windows system file.</summary>
+    public CriticalKind Critical { get; }
+
+    public bool IsCritical => Critical != CriticalKind.None;
+
+    public string CriticalText => IsCritical ? Loc.I["Critical_" + Critical] : "";
+
+    public override string ToString() => IsCritical ? $"{Name}, {SizeText}, {CriticalText}" : $"{Name}, {SizeText}";
 }
 
 public sealed class DriveViewModel
@@ -52,4 +69,8 @@ public sealed class DriveViewModel
     public string UsedText => ByteFormat.Format(_total - _free, Loc.I.Culture);
 
     public long FreeBytes => _free;
+
+    public long UsedBytes => _total - _free;
+
+    public override string ToString() => $"{Letter} {Label}, {FreeText}";
 }

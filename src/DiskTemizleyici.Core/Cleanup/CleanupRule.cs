@@ -47,8 +47,8 @@ public sealed class CleanupRule
     public string? Pattern { get; init; }
 
     /// <summary>
-    /// For <see cref="RuleMode.Files"/>: keep this many of the newest matches. Files that share a name up to
-    /// the first dot (<c>save1.cok</c> and <c>save1.cok.cid</c>) count as one item.
+    /// For <see cref="RuleMode.Files"/>: keep this many of the newest matches in each folder. Files that share a name
+    /// up to the first dot (<c>save1.cok</c> and <c>save1.cok.cid</c>) count as one item.
     /// </summary>
     public int KeepNewest { get; init; }
 

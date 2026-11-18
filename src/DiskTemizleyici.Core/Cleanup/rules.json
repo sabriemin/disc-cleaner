@@ -167,5 +167,123 @@
       "tr": "Oyunun ve modların önbelleği. Oyun yeniden oluşturur; sonraki açılış uzun sürebilir.",
       "en": "Cache of the game and its mods. The game rebuilds it; the next launch may take longer."
     }
+  },
+  {
+    "id": "teams-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%LOCALAPPDATA%\\Packages\\MSTeams_8wekyb3d8bbwe\\LocalCache\\Microsoft\\MSTeams\\EBWebView\\*\\Cache",
+      "%LOCALAPPDATA%\\Packages\\MSTeams_8wekyb3d8bbwe\\LocalCache\\Microsoft\\MSTeams\\EBWebView\\*\\Code Cache",
+      "%LOCALAPPDATA%\\Packages\\MSTeams_8wekyb3d8bbwe\\LocalCache\\Microsoft\\MSTeams\\EBWebView\\*\\GPUCache",
+      "%APPDATA%\\Microsoft\\Teams\\Cache",
+      "%APPDATA%\\Microsoft\\Teams\\Code Cache",
+      "%APPDATA%\\Microsoft\\Teams\\GPUCache"
+    ],
+    "name": { "tr": "Microsoft Teams önbelleği", "en": "Microsoft Teams cache" },
+    "description": {
+      "tr": "Teams'in tarayıcı, kod ve ekran kartı önbellekleri (yeni ve klasik Teams). Teams bunları yeniden oluşturur; sonraki açılış biraz yavaş olur. Sohbetler, ayarlar, arka planlar ve günlükler silinmez. Önce Teams'i bildirim alanındaki simgesinden tamamen kapat; açık dosyalar atlanır.",
+      "en": "Teams' browser, code and GPU caches (new and classic Teams). Teams rebuilds them; the next start is a little slower. Chats, settings, backgrounds and logs are not touched. Quit Teams from its tray icon first; files in use are skipped."
+    }
+  },
+  {
+    "id": "discord-slack-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%APPDATA%\\discord*\\Cache",
+      "%APPDATA%\\discord*\\Code Cache",
+      "%APPDATA%\\discord*\\GPUCache",
+      "%APPDATA%\\Slack\\Cache",
+      "%APPDATA%\\Slack\\Code Cache",
+      "%APPDATA%\\Slack\\GPUCache",
+      "%LOCALAPPDATA%\\Packages\\*slack*\\LocalCache\\Roaming\\Slack\\Cache",
+      "%LOCALAPPDATA%\\Packages\\*slack*\\LocalCache\\Roaming\\Slack\\Code Cache",
+      "%LOCALAPPDATA%\\Packages\\*slack*\\LocalCache\\Roaming\\Slack\\GPUCache"
+    ],
+    "name": { "tr": "Discord / Slack önbelleği", "en": "Discord / Slack cache" },
+    "description": {
+      "tr": "Discord (PTB ve Canary dahil) ve Slack masaüstü uygulamalarının önbellekleri. Oturumlar, ayarlar ve mesajlar silinmez. Önce uygulamaları bildirim alanından tamamen kapat; pencereyi kapatmak yetmez.",
+      "en": "Caches of the Discord (including PTB and Canary) and Slack desktop apps. Logins, settings and messages are not touched. Quit the apps from the tray first; closing the window is not enough."
+    }
+  },
+  {
+    "id": "vscode-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%APPDATA%\\Code\\Cache",
+      "%APPDATA%\\Code\\Code Cache",
+      "%APPDATA%\\Code\\GPUCache",
+      "%APPDATA%\\Code\\CachedData",
+      "%APPDATA%\\Code\\CachedExtensionVSIXs",
+      "%APPDATA%\\Code\\Crashpad\\reports",
+      "%APPDATA%\\Code - Insiders\\Cache",
+      "%APPDATA%\\Code - Insiders\\Code Cache",
+      "%APPDATA%\\Code - Insiders\\GPUCache",
+      "%APPDATA%\\Code - Insiders\\CachedData",
+      "%APPDATA%\\Code - Insiders\\CachedExtensionVSIXs",
+      "%APPDATA%\\Code - Insiders\\Crashpad\\reports"
+    ],
+    "name": { "tr": "Visual Studio Code önbellekleri", "en": "Visual Studio Code caches" },
+    "description": {
+      "tr": "VS Code'un önbellekleri, eski sürüm kod önbellekleri, indirilmiş eklenti paketleri ve çökme dökümleri. Kurulu eklentiler, ayarlar ve kaydedilmemiş dosya yedekleri silinmez. Önce VS Code'un tüm pencerelerini kapat.",
+      "en": "VS Code's caches, code caches of old builds, downloaded extension packages and crash dumps. Installed extensions, settings and backups of unsaved files are not touched. Close every VS Code window first."
+    }
+  },
+  {
+    "id": "steam-web-cache-logs",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\*\\Cache",
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\*\\Code Cache",
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\*\\GPUCache",
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\Cache",
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\Code Cache",
+      "%LOCALAPPDATA%\\Steam\\htmlcache\\GPUCache",
+      "%ProgramFiles(x86)%\\Steam\\logs",
+      "%ProgramFiles(x86)%\\Steam\\dumps",
+      "%ProgramFiles(x86)%\\Steam\\appcache\\httpcache"
+    ],
+    "name": { "tr": "Steam web önbelleği ve günlükleri", "en": "Steam web cache and logs" },
+    "description": {
+      "tr": "Steam'in mağaza ve kütüphane sayfaları için tuttuğu tarayıcı önbelleği, Steam günlükleri ve çökme dökümleri. Oyunlar, kayıtlar ve oturum silinmez. Önce Steam > Çıkış ile Steam'i kapat.",
+      "en": "The browser cache Steam keeps for its store and library pages, Steam's logs and crash dumps. Games, saves and your login are not touched. Close Steam with Steam > Exit first."
+    }
+  },
+  {
+    "id": "epic-launcher-cache",
+    "mode": "Contents",
+    "risk": "Safe",
+    "paths": [
+      "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\webcache*\\Cache",
+      "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\webcache*\\Code Cache",
+      "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\webcache*\\GPUCache",
+      "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\Logs"
+    ],
+    "name": { "tr": "Epic Games Launcher önbelleği", "en": "Epic Games Launcher cache" },
+    "description": {
+      "tr": "Epic Games Launcher'ın web önbelleği ve günlükleri. Oyunlar, oturum ve site verileri silinmez. Önce launcher'ı bildirim alanından kapat.",
+      "en": "The Epic Games Launcher's web cache and logs. Games, your login and site data are not touched. Quit the launcher from the tray first."
+    }
+  },
+  {
+    "id": "kernel-crash-dumps",
+    "mode": "Files",
+    "risk": "Caution",
+    "needsAdmin": true,
+    "pattern": "*.dmp",
+    "minAgeDays": 7,
+    "paths": [
+      "%WINDIR%\\Minidump",
+      "%WINDIR%\\LiveKernelReports",
+      "%LOCALAPPDATA%\\Microsoft\\Windows\\TaskManager\\LiveKernelDumps"
+    ],
+    "name": { "tr": "Windows çökme dökümleri (mavi ekran)", "en": "Windows crash dumps (blue screen)" },
+    "description": {
+      "tr": "7 günden eski mavi ekran ve canlı çekirdek dökümleri. Bir mavi ekran ya da ekran kartı sorununu araştırıyorsan bunları silme: sorunun tek kanıtı bunlardır ve yeniden oluşturulamazlar. Yönetici izni gerekir.",
+      "en": "Blue-screen and live kernel dumps older than 7 days. If you are tracking down a blue screen or a graphics driver problem, keep them: they are the only evidence and cannot be recreated. Needs administrator rights."
+    }
   }
 ]

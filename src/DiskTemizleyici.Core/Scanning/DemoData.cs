@@ -70,6 +70,18 @@ public static class DemoData
             new(@"C:\Users\you\Downloads\VS_Setup_offline.zip", 870 * MB, DateTime.UtcNow.AddDays(-75)),
         };
 
+        var types = new (string Ext, double Gb, long Count)[]
+        {
+            (".mp4", 31.2, 412), (".mkv", 9.8, 37), (".pak", 44.1, 1_203), (".dll", 38.5, 96_410), (".vhdx", 5.2, 2),
+            (".iso", 5.7, 3), (".zip", 12.3, 288), (".exe", 14.6, 3_902), (".msi", 4.1, 611), (".jpg", 6.2, 23_118),
+            (".png", 3.9, 41_007), (".cok", 38.4, 3_982), (".pdf", 2.1, 1_204), (".docx", 0.6, 389), (".mp3", 1.8, 2_210),
+            ("", 22.0, 3), (".dat", 19.4, 18_220), (".js", 7.6, 310_442), (".pdb", 6.3, 4_120), (".log", 1.2, 9_870),
+        };
+        var fileTypes = types
+            .Select(t => new FileTypeStat(t.Ext, FileCategories.Of(t.Ext), (long)(t.Gb * GB), t.Count))
+            .OrderByDescending(t => t.Bytes)
+            .ToList();
+
         return new ScanResult
         {
             Root = root,
@@ -77,6 +89,7 @@ public static class DemoData
             Elapsed = TimeSpan.FromSeconds(53.2),
             DirectoriesScanned = 412_337,
             InaccessibleDirectories = 0,
+            FileTypes = fileTypes,
         };
     }
 

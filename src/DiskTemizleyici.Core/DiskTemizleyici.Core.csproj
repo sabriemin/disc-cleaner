@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- line numbers in crash reports, also in the single-file exe -->
+    <DebugType>embedded</DebugType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>

@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -30,9 +32,50 @@ public partial class MainWindow : Window, IShell
         // "DiskTemizleyici.exe D:\Games" starts scanning that folder right away.
         var args = Environment.GetCommandLineArgs();
         if (_vm.IsDemo)
+        {
             Loaded += (_, _) => _vm.LoadDemo();
-        else if (args.Length > 1 && Directory.Exists(args[1]))
-            Loaded += async (_, _) => await _vm.StartScanAsync(args[1]);
+        }
+        else if (args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]))
+        {
+            var folder = args[1];
+            if (Directory.Exists(folder))
+                Loaded += async (_, _) => await _vm.StartScanAsync(folder);
+            else
+                Loaded += (_, _) => Show(Localization.Loc.I["Error"], Localization.Loc.I.F("PathNotFound", folder), DialogKind.Error);
+        }
+    }
+
+    /// <summary>The keyboard shortcuts act on the selected folder.</summary>
+    private void OnTreeSelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e) =>
+        _vm.SelectedFolder = e.NewValue as FolderItemViewModel;
+
+    /// <summary>
+    /// A right-click selects the row first (a TreeView only does that for the left button), so the context menu and
+    /// the shortcuts it lists (Del, Enter, Ctrl+C, F5) act on the same folder.
+    /// </summary>
+    private void OnTreeRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        for (var d = e.OriginalSource as DependencyObject; d is not null;
+             d = d is Visual or System.Windows.Media.Media3D.Visual3D ? VisualTreeHelper.GetParent(d) : LogicalTreeHelper.GetParent(d))
+        {
+            if (d is not TreeViewItem row) continue;
+            row.IsSelected = true;
+            row.Focus();
+            return;
+        }
+    }
+
+    /// <summary>Esc closes the settings popover, and only that: it must not also stop a running scan or clean-up.</summary>
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape && SettingsPopup.IsOpen)
+        {
+            SettingsToggle.IsChecked = false; // the popup's IsOpen follows the toggle
+            SettingsToggle.Focus();
+            e.Handled = true;
+            return;
+        }
+        base.OnPreviewKeyDown(e);
     }
 
     // ------------------------------------------------------------------ IShell
@@ -81,7 +124,7 @@ public partial class MainWindow : Window, IShell
                 ResizeIsland(animate: true);
                 break;
             case nameof(MainViewModel.SelectedView):
-                AnimateViewIn(_vm.SelectedView switch { 1 => FilesView, 2 => SuggestionsView, _ => FoldersView });
+                AnimateViewIn(_vm.SelectedView switch { 1 => FilesView, 2 => SuggestionsView, 3 => TypesView, _ => FoldersView });
                 break;
         }
     }

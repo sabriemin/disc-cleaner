@@ -33,7 +33,10 @@ public sealed class AppSettings
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            File.WriteAllText(FilePath, JsonSerializer.Serialize(this, Json));
+            // write next to it first and then swap, so a crash mid-write never leaves a half-written file
+            var temp = FilePath + ".tmp";
+            File.WriteAllText(temp, JsonSerializer.Serialize(this, Json));
+            File.Move(temp, FilePath, overwrite: true);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

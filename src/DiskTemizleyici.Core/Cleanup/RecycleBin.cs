@@ -45,6 +45,7 @@ public static class RecycleBin
     private const ushort FOF_NOCONFIRMATION = 0x0010;
     private const ushort FOF_ALLOWUNDO = 0x0040;
     private const ushort FOF_NOERRORUI = 0x0400;
+    private const ushort FOF_NO_CONNECTED_ELEMENTS = 0x2000; // page.htm must not take page_files with it
     private const ushort FOF_WANTNUKEWARNING = 0x4000;
 
     /// <summary>Total size and item count in the Recycle Bin of all drives.</summary>
@@ -67,19 +68,37 @@ public static class RecycleBin
     /// Sends files or folders to the Recycle Bin. If something is too big for the Recycle Bin, Windows asks
     /// the user before deleting it permanently (it is never removed permanently without a warning).
     /// </summary>
-    /// <returns>True if the shell reported success and the user did not cancel.</returns>
-    public static bool Send(IReadOnlyList<string> paths, IntPtr ownerWindow = default)
+    /// <returns>The shell's result code: 0 on success; -1 when the user cancelled.</returns>
+    public static int Send(IReadOnlyList<string> paths, IntPtr ownerWindow = default)
     {
-        if (paths.Count == 0) return true;
+        if (paths.Count == 0) return 0;
         var from = string.Join('\0', paths) + "\0\0";
         var op = new SHFILEOPSTRUCT
         {
             hwnd = ownerWindow,
             wFunc = FO_DELETE,
             pFrom = from,
-            fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI | FOF_WANTNUKEWARNING,
+            fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI | FOF_WANTNUKEWARNING | FOF_NO_CONNECTED_ELEMENTS,
         };
         var result = SHFileOperation(ref op);
-        return result == 0 && !op.fAnyOperationsAborted;
+        // A "No"/"Cancel" to Windows' own prompt can come back with any result code; the abort flag is what counts.
+        return op.fAnyOperationsAborted ? -1 : result;
+    }
+
+    /// <summary>
+    /// False for drives without a Recycle Bin (USB sticks, memory cards, network drives): there "move to the
+    /// Recycle Bin" really deletes.
+    /// </summary>
+    public static bool IsAvailableFor(string path)
+    {
+        try
+        {
+            var root = Path.GetPathRoot(Path.GetFullPath(path));
+            return root is not null && new DriveInfo(root).DriveType == DriveType.Fixed;
+        }
+        catch (Exception ex) when (ex is ArgumentException or IOException or NotSupportedException)
+        {
+            return false;
+        }
     }
 }

@@ -18,7 +18,7 @@
     <SolidColorBrush x:Key="SubtleBorderBrush" Color="#1FFFFFFF" />
     <SolidColorBrush x:Key="TextBrush" Color="#F5F5F7" />
     <SolidColorBrush x:Key="TextMutedBrush" Color="#A1A1AA" />
-    <SolidColorBrush x:Key="TextFaintBrush" Color="#6B6B75" />
+    <SolidColorBrush x:Key="TextFaintBrush" Color="#8A8A94" />
     <SolidColorBrush x:Key="BarTrackBrush" Color="#2A2A30" />
     <SolidColorBrush x:Key="ScrollThumbBrush" Color="#3A3A42" />
     <SolidColorBrush x:Key="ScrollThumbHoverBrush" Color="#5A5A66" />
@@ -54,6 +54,17 @@
     <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
     <BackEase x:Key="SpringOut" EasingMode="EaseOut" Amplitude="0.45" />
 
+    <!-- ============================================================ keyboard focus -->
+    <Style x:Key="FocusRing">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Margin="-3" CornerRadius="14" BorderThickness="2" BorderBrush="{DynamicResource AccentBrush}" SnapsToDevicePixels="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ============================================================ text -->
     <Style x:Key="Icon" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
@@ -78,6 +89,7 @@
     <!-- ============================================================ buttons -->
     <Style x:Key="BaseButton" TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
@@ -161,6 +173,7 @@
 
     <Style x:Key="ChromeButton" TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Width" Value="46" />
         <Setter Property="Height" Value="34" />
         <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
@@ -204,6 +217,7 @@
     <!-- Round toggle (settings gear) -->
     <Style x:Key="IconToggle" TargetType="ToggleButton">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Width" Value="36" />
         <Setter Property="Height" Value="36" />
@@ -234,6 +248,7 @@
     <!-- ============================================================ segmented control -->
     <Style x:Key="Segment" TargetType="RadioButton">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         <Setter Property="Padding" Value="14,7" />
@@ -272,6 +287,7 @@
     <!-- ============================================================ dock items (view switcher) -->
     <Style x:Key="DockItem" TargetType="RadioButton">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
@@ -328,7 +344,7 @@
     <Style x:Key="Switch" TargetType="CheckBox">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Focusable" Value="False" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
@@ -526,6 +542,8 @@
                         <DockPanel>
                             <ContentPresenter x:Name="Icon" ContentSource="Icon" DockPanel.Dock="Left" Width="18" Margin="0,0,10,0"
                                               VerticalAlignment="Center" TextElement.FontFamily="{StaticResource IconFont}" />
+                            <TextBlock DockPanel.Dock="Right" Text="{TemplateBinding InputGestureText}" Margin="24,0,0,0"
+                                       VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextFaintBrush}" />
                             <ContentPresenter ContentSource="Header" VerticalAlignment="Center" RecognizesAccessKey="True" />
                         </DockPanel>
                     </Border>
@@ -564,6 +582,32 @@
         </ScrollViewer>
     </ControlTemplate>
 
+    <Style x:Key="PlainListItem" TargetType="ListBoxItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Bd" CornerRadius="10" Background="Transparent" BorderThickness="1.5" BorderBrush="Transparent" Padding="10,7" Margin="4,1">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="PlainList" TargetType="ListBox">
         <Setter Property="Template" Value="{StaticResource BareListBox}" />
         <Setter Property="Background" Value="Transparent" />
@@ -572,31 +616,7 @@
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="OverridesDefaultStyle" Value="True" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBoxItem">
-                                <Border x:Name="Bd" CornerRadius="10" Background="Transparent" Padding="10,7" Margin="4,1">
-                                    <ContentPresenter />
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource PlainListItem}" />
     </Style>
 
     <!-- Drive cards -->
@@ -741,11 +761,14 @@
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <!-- Standard, not Recycling: a recycled container keeps its two-way IsSelected binding and can re-select or
+             deselect the wrong row, which (with selection-driven Del) could delete a row the user did not pick. -->
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Standard" />
     </Style>
 
     <Style x:Key="FolderTreeItem" TargetType="TreeViewItem">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <!-- children are created only when a row is expanded, so this binding must be two-way -->
         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -760,7 +783,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="TreeViewItem">
                     <StackPanel>
-                        <Border x:Name="Bd" CornerRadius="10" Background="Transparent" Padding="6,0,10,0" Margin="4,1" Height="36">
+                        <Border x:Name="Bd" CornerRadius="10" Background="Transparent" BorderThickness="1.5" BorderBrush="Transparent" Padding="6,0,10,0" Margin="4,1" Height="36">
                             <DockPanel>
                                 <Border DockPanel.Dock="Left" Margin="{Binding IndentMargin}" Width="22">
                                     <ToggleButton x:Name="Expander" Style="{StaticResource Chevron}"
@@ -783,6 +806,9 @@
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -61,6 +61,7 @@ public class CleanupTests
         t.File("old.tmp", 100, old);
         t.File("new.tmp", 100);
         t.File(@"olddir\inner.tmp", 300, old);
+        Directory.SetCreationTimeUtc(Path.Combine(t.Path, "olddir"), old);
         Directory.SetLastWriteTimeUtc(Path.Combine(t.Path, "olddir"), old);
 
         var c = RuleEvaluator.Evaluate(Rule(RuleMode.Contents, t.Path, minAge: 1))!;

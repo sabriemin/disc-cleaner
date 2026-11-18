@@ -18,6 +18,19 @@
         <WindowChrome CaptionHeight="52" ResizeBorderThickness="6" GlassFrameThickness="-1" CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+        <KeyBinding Key="Delete" Command="{Binding MoveToRecycleCommand}" CommandParameter="{Binding CurrentItem}" />
+        <KeyBinding Key="Delete" Modifiers="Shift" Command="{Binding DeletePermanentCommand}" CommandParameter="{Binding CurrentItem}" />
+        <KeyBinding Key="Enter" Command="{Binding OpenInExplorerCommand}" CommandParameter="{Binding CurrentItem}" />
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyPathCommand}" CommandParameter="{Binding CurrentItem}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCurrentCommand}" />
+        <KeyBinding Key="D1" Modifiers="Control" Command="{Binding ShowViewCommand}" CommandParameter="0" />
+        <KeyBinding Key="D2" Modifiers="Control" Command="{Binding ShowViewCommand}" CommandParameter="1" />
+        <KeyBinding Key="D3" Modifiers="Control" Command="{Binding ShowViewCommand}" CommandParameter="3" />
+        <KeyBinding Key="D4" Modifiers="Control" Command="{Binding ShowViewCommand}" CommandParameter="2" />
+    </Window.InputBindings>
+
     <Window.Resources>
         <app:EqualsConverter x:Key="Eq" />
         <app:EqualsToVisibilityConverter x:Key="EqVis" />
@@ -26,28 +39,70 @@
 
         <!-- Context menu shared by the folder tree and the large-file list. -->
         <ContextMenu x:Key="ItemMenu" x:Shared="False">
-            <MenuItem Header="{Binding [OpenInExplorer], Source={x:Static l:Loc.I}}"
+            <MenuItem Header="{Binding [OpenInExplorer], Source={x:Static l:Loc.I}}" InputGestureText="Enter"
                       Command="{Binding PlacementTarget.Tag.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                       CommandParameter="{Binding}">
                 <MenuItem.Icon><TextBlock Text="&#xE838;" /></MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{Binding [CopyPath], Source={x:Static l:Loc.I}}"
+            <MenuItem Header="{Binding [CopyPath], Source={x:Static l:Loc.I}}" InputGestureText="Ctrl+C"
                       Command="{Binding PlacementTarget.Tag.CopyPathCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                       CommandParameter="{Binding}">
                 <MenuItem.Icon><TextBlock Text="&#xE8C8;" /></MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="{Binding [Rescan], Source={x:Static l:Loc.I}}" InputGestureText="F5"
+                      Command="{Binding PlacementTarget.Tag.RescanCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                      CommandParameter="{Binding}">
+                <MenuItem.Icon><TextBlock Text="&#xE72C;" /></MenuItem.Icon>
+            </MenuItem>
             <Separator />
-            <MenuItem Header="{Binding [MoveToRecycle], Source={x:Static l:Loc.I}}"
+            <MenuItem Header="{Binding [MoveToRecycle], Source={x:Static l:Loc.I}}" InputGestureText="Del"
                       Command="{Binding PlacementTarget.Tag.MoveToRecycleCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                       CommandParameter="{Binding}">
                 <MenuItem.Icon><TextBlock Text="&#xE74D;" /></MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{Binding [DeletePermanent], Source={x:Static l:Loc.I}}" Foreground="{DynamicResource DangerBrush}"
+            <MenuItem Header="{Binding [DeletePermanent], Source={x:Static l:Loc.I}}" InputGestureText="Shift+Del" Foreground="{DynamicResource DangerBrush}"
                       Command="{Binding PlacementTarget.Tag.DeletePermanentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                       CommandParameter="{Binding}">
                 <MenuItem.Icon><TextBlock Text="&#xE7BA;" /></MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
+
+        <Style x:Key="TreeRow" TargetType="TreeViewItem" BasedOn="{StaticResource FolderTreeItem}">
+            <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+            <Setter Property="ContextMenu" Value="{StaticResource ItemMenu}" />
+            <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+        </Style>
+
+        <Style x:Key="FileRow" TargetType="ListBoxItem" BasedOn="{StaticResource PlainListItem}">
+            <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+            <Setter Property="ContextMenu" Value="{StaticResource ItemMenu}" />
+            <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+        </Style>
+
+        <!-- a whole row that is clickable (file type categories and extensions) -->
+        <Style x:Key="RowButton" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#12FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="ViewHost" TargetType="Grid">
             <Setter Property="RenderTransform">
@@ -123,7 +178,7 @@
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Button Style="{StaticResource IconButton}" Content="&#xE7EF;" Margin="0,8,2,0" Foreground="{DynamicResource TextMutedBrush}"
+                    <Button Style="{StaticResource IconButton}" Content="&#xE7EF;" Margin="0,8,2,0" Foreground="{DynamicResource TextMutedBrush}" AutomationProperties.Name="{Binding [RunAsAdmin], Source={x:Static l:Loc.I}}"
                             Command="{Binding RestartAsAdminCommand}" WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{Binding [AdminTip], Source={x:Static l:Loc.I}}"
                             Visibility="{Binding IsAdmin, Converter={StaticResource Vis}, ConverterParameter=invert}" />
@@ -131,11 +186,11 @@
                                   WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding [Settings], Source={x:Static l:Loc.I}}"
                                   AutomationProperties.Name="{Binding [Settings], Source={x:Static l:Loc.I}}"
                                   IsHitTestVisible="{Binding IsOpen, ElementName=SettingsPopup, Converter={StaticResource Not}}" />
-                    <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Click="OnMinimize" WindowChrome.IsHitTestVisibleInChrome="True"
+                    <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Click="OnMinimize" WindowChrome.IsHitTestVisibleInChrome="True" AutomationProperties.Name="{Binding [Minimize], Source={x:Static l:Loc.I}}"
                             ToolTip="{Binding [Minimize], Source={x:Static l:Loc.I}}" />
-                    <Button x:Name="MaxButton" Style="{StaticResource ChromeButton}" Content="&#xE922;" Click="OnMaximize" WindowChrome.IsHitTestVisibleInChrome="True"
+                    <Button x:Name="MaxButton" Style="{StaticResource ChromeButton}" Content="&#xE922;" Click="OnMaximize" WindowChrome.IsHitTestVisibleInChrome="True" AutomationProperties.Name="{Binding [Maximize], Source={x:Static l:Loc.I}}"
                             ToolTip="{Binding [Maximize], Source={x:Static l:Loc.I}}" />
-                    <Button Style="{StaticResource ChromeCloseButton}" Content="&#xE8BB;" Click="OnClose" WindowChrome.IsHitTestVisibleInChrome="True"
+                    <Button Style="{StaticResource ChromeCloseButton}" Content="&#xE8BB;" Click="OnClose" WindowChrome.IsHitTestVisibleInChrome="True" AutomationProperties.Name="{Binding [Close], Source={x:Static l:Loc.I}}"
                             ToolTip="{Binding [Close], Source={x:Static l:Loc.I}}" />
                 </StackPanel>
 
@@ -237,8 +292,8 @@
                             <TextBlock Text="{Binding [Scan], Source={x:Static l:Loc.I}}" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource GhostButton}" Command="{Binding CancelCommand}" MinWidth="110"
-                            Visibility="{Binding IsScanning, Converter={StaticResource Vis}}">
+                    <Button Style="{StaticResource GhostButton}" Command="{Binding CancelCommand}" MinWidth="110" Margin="10,0,0,0"
+                            ToolTip="Esc" Visibility="{Binding ShowStop, Converter={StaticResource Vis}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource Icon}" Text="&#xE71A;" Margin="0,0,8,0" />
                             <TextBlock Text="{Binding [Cancel], Source={x:Static l:Loc.I}}" />
@@ -247,7 +302,15 @@
                 </StackPanel>
             </Grid>
 
-            <TextBlock Grid.Row="2" Text="{Binding Status}" Margin="26,10,26,0" TextTrimming="CharacterEllipsis">
+            <DockPanel Grid.Row="2" Margin="26,10,26,0">
+                <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="10,4" Margin="12,0,0,0" FontSize="12"
+                        Command="{Binding RestartAsAdminCommand}" Visibility="{Binding ShowDeniedButton, Converter={StaticResource Vis}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE7EF;" FontSize="11" Margin="0,0,7,0" />
+                        <TextBlock Text="{Binding DeniedButtonText}" />
+                    </StackPanel>
+                </Button>
+            <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource Faint}">
                         <Style.Triggers>
@@ -258,6 +321,7 @@
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
+            </DockPanel>
 
             <!-- ======================================================== content card -->
             <Border Grid.Row="3" Style="{StaticResource Card}" Margin="16,10,16,0">
@@ -345,12 +409,13 @@
                                 <TextBlock Grid.Column="4" Text="{Binding [ColFiles], Source={x:Static l:Loc.I}}" Style="{StaticResource ColumnHeader}" TextAlignment="Right" />
                             </Grid>
                             <TreeView Grid.Row="1" Style="{StaticResource FolderTree}" ItemsSource="{Binding Tree}"
-                                      ItemContainerStyle="{StaticResource FolderTreeItem}" Margin="0,0,0,8">
+                                      ItemContainerStyle="{StaticResource TreeRow}" Margin="0,0,0,8"
+                                      SelectedItemChanged="OnTreeSelectionChanged"
+                                      PreviewMouseRightButtonDown="OnTreeRightButtonDown">
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate DataType="{x:Type vm:FolderItemViewModel}" ItemsSource="{Binding Children}"
-                                                              ItemContainerStyle="{StaticResource FolderTreeItem}">
-                                        <Grid Background="Transparent" ContextMenu="{StaticResource ItemMenu}"
-                                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TreeView}}">
+                                                              ItemContainerStyle="{StaticResource TreeRow}">
+                                        <Grid Background="Transparent">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="28" />
                                                 <ColumnDefinition Width="*" />
@@ -362,15 +427,15 @@
                                                 <TextBlock Style="{StaticResource Icon}" Text="{Binding Glyph}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
                                             </Border>
                                             <DockPanel Grid.Column="1" Margin="10,0,12,0">
-                                                <Border DockPanel.Dock="Right" Style="{StaticResource Chip}" Margin="8,0,0,0"
+                                                <Border DockPanel.Dock="Right" Style="{StaticResource Chip}" Margin="8,0,0,0" ToolTip="{Binding RowTip}"
                                                         Visibility="{Binding HasNote, Converter={StaticResource Vis}}">
                                                     <TextBlock Text="{Binding Note}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
                                                 </Border>
-                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding Node.FullPath}">
+                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding RowTip}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsFilesRow}" Value="True">
+                                                                <DataTrigger Binding="{Binding IsSpecialRow}" Value="True">
                                                                     <Setter Property="FontStyle" Value="Italic" />
                                                                     <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
                                                                 </DataTrigger>
@@ -402,9 +467,23 @@
                         <Grid Visibility="{Binding HasScan, Converter={StaticResource Vis}}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Grid Margin="18,16,24,6">
+                            <StackPanel Orientation="Horizontal" Margin="18,14,24,0" Visibility="{Binding HasLargeFilesFilter, Converter={StaticResource Vis}}">
+                                <Border Style="{StaticResource Chip}" Background="{DynamicResource AccentSoftBrush}" Padding="10,4" CornerRadius="9">
+                                    <TextBlock Text="{Binding LargeFilesFilterText}" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                                </Border>
+                                <Button Style="{StaticResource GhostButton}" Padding="10,4" Margin="8,0,0,0" FontSize="12" Command="{Binding ClearLargeFilesFilterCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Icon}" Text="&#xE711;" FontSize="10" Margin="0,0,6,0" />
+                                        <TextBlock Text="{Binding [ClearFilter], Source={x:Static l:Loc.I}}" />
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Text="{Binding [FilterEmpty], Source={x:Static l:Loc.I}}" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="14,0,0,0"
+                                           Visibility="{Binding ShowFilterEmpty, Converter={StaticResource Vis}}" />
+                            </StackPanel>
+                            <Grid Grid.Row="1" Margin="18,16,24,6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="28" />
                                     <ColumnDefinition Width="*" />
@@ -415,11 +494,11 @@
                                 <TextBlock Grid.Column="2" Text="{Binding [ColModified], Source={x:Static l:Loc.I}}" Style="{StaticResource ColumnHeader}" />
                                 <TextBlock Grid.Column="3" Text="{Binding [ColSize], Source={x:Static l:Loc.I}}" Style="{StaticResource ColumnHeader}" TextAlignment="Right" />
                             </Grid>
-                            <ListBox Grid.Row="1" Style="{StaticResource PlainList}" ItemsSource="{Binding LargeFiles}" Margin="0,0,0,8">
+                            <ListBox Grid.Row="2" Style="{StaticResource PlainList}" ItemsSource="{Binding LargeFiles}" Margin="0,0,0,8"
+                                     ItemContainerStyle="{StaticResource FileRow}" SelectedItem="{Binding SelectedLargeFile}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:LargeFileViewModel}">
-                                        <Grid Background="Transparent" ContextMenu="{StaticResource ItemMenu}"
-                                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBox}}">
+                                        <Grid Background="Transparent">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="28" />
                                                 <ColumnDefinition Width="*" />
@@ -430,7 +509,16 @@
                                                 <TextBlock Style="{StaticResource Icon}" Text="&#xE8A5;" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
                                             </Border>
                                             <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                <DockPanel>
+                                                    <Border DockPanel.Dock="Right" CornerRadius="7" Padding="8,1" Margin="10,0,0,0" Background="{DynamicResource CautionSoftBrush}"
+                                                            Visibility="{Binding IsCritical, Converter={StaticResource Vis}}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Style="{StaticResource Icon}" Text="&#xE7BA;" FontSize="10" Margin="0,0,5,0" Foreground="{DynamicResource CautionBrush}" />
+                                                            <TextBlock Text="{Binding CriticalText}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource CautionBrush}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                </DockPanel>
                                                 <TextBlock Text="{Binding Folder}" Style="{StaticResource Faint}" TextTrimming="CharacterEllipsis" Margin="0,1,0,0" />
                                             </StackPanel>
                                             <TextBlock Grid.Column="2" Text="{Binding ModifiedText}" Style="{StaticResource Faint}" VerticalAlignment="Center" />
@@ -439,6 +527,103 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
+                        </Grid>
+                    </Grid>
+
+                    <!-- ............................................ file types -->
+                    <Grid x:Name="TypesView" Style="{StaticResource ViewHost}"
+                          Visibility="{Binding SelectedView, Converter={StaticResource EqVis}, ConverterParameter=3}">
+                        <TextBlock Text="{Binding [TypesEmpty], Source={x:Static l:Loc.I}}" Style="{StaticResource Muted}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Visibility="{Binding HasFileTypes, Converter={StaticResource Vis}, ConverterParameter=invert}" />
+                        <Grid Visibility="{Binding HasFileTypes, Converter={StaticResource Vis}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Margin="24,18,24,12">
+                                <TextBlock Text="{Binding [TypesHint], Source={x:Static l:Loc.I}}" Style="{StaticResource Muted}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding FileTypesStale, Converter={StaticResource Vis}}">
+                                    <TextBlock Style="{StaticResource Icon}" Text="&#xE7BA;" FontSize="12" Margin="0,0,7,0"
+                                               Foreground="{DynamicResource CautionBrush}" VerticalAlignment="Top" />
+                                    <TextBlock Text="{Binding [TypesStale], Source={x:Static l:Loc.I}}" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource CautionBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="14,0,10,8">
+                                <ItemsControl ItemsSource="{Binding FileTypes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:FileCategoryViewModel}">
+                                            <Border CornerRadius="16" Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}"
+                                                    BorderThickness="1" Padding="6" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Button Style="{StaticResource RowButton}" AutomationProperties.Name="{Binding Name}"
+                                                            Command="{Binding DataContext.ToggleCategoryCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="200" />
+                                                                <ColumnDefinition Width="100" />
+                                                                <ColumnDefinition Width="28" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Border Width="36" Height="36" CornerRadius="10" Background="{DynamicResource SurfaceHoverBrush}">
+                                                                <TextBlock Style="{StaticResource Icon}" Text="{Binding Glyph}" FontSize="15" />
+                                                            </Border>
+                                                            <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                                                                <TextBlock Text="{Binding CountText}" Style="{StaticResource Faint}" />
+                                                            </StackPanel>
+                                                            <DockPanel Grid.Column="2" VerticalAlignment="Center">
+                                                                <TextBlock DockPanel.Dock="Right" Text="{Binding ShareText}" Width="56" TextAlignment="Right" Style="{StaticResource Faint}" />
+                                                                <ProgressBar Style="{StaticResource PillBar}" Value="{Binding Share, Mode=OneWay}" />
+                                                            </DockPanel>
+                                                            <TextBlock Grid.Column="3" Text="{Binding SizeText}" FontFamily="{StaticResource DisplayFont}" FontSize="16"
+                                                                       FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Column="4" FontSize="10" Foreground="{DynamicResource TextMutedBrush}">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource Icon}">
+                                                                        <Setter Property="Text" Value="&#xE70D;" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                                                <Setter Property="Text" Value="&#xE70E;" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </Button>
+                                                    <ItemsControl ItemsSource="{Binding Extensions}" Margin="48,4,0,4"
+                                                                  Visibility="{Binding IsExpanded, Converter={StaticResource Vis}}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate DataType="{x:Type vm:FileExtensionViewModel}">
+                                                                <Button Style="{StaticResource RowButton}" Padding="8,4" AutomationProperties.Name="{Binding Name}"
+                                                                        Command="{Binding DataContext.FilterByExtensionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*" />
+                                                                            <ColumnDefinition Width="160" />
+                                                                            <ColumnDefinition Width="120" />
+                                                                            <ColumnDefinition Width="100" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                        <ProgressBar Grid.Column="1" Style="{StaticResource PillBar}" Height="4" Value="{Binding Share, Mode=OneWay}" />
+                                                                        <TextBlock Grid.Column="2" Text="{Binding CountText}" Style="{StaticResource Faint}" TextAlignment="Right" VerticalAlignment="Center" />
+                                                                        <TextBlock Grid.Column="3" Text="{Binding SizeText}" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Center" />
+                                                                    </Grid>
+                                                                </Button>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
                         </Grid>
                     </Grid>
 
@@ -516,12 +701,28 @@
                                                     <TextBlock Text="{Binding Description}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,5,0,0" LineHeight="19" />
                                                     <TextBlock Text="{Binding PathsText}" Style="{StaticResource Faint}" TextWrapping="Wrap" Margin="0,7,0,0"
                                                                Visibility="{Binding HasPaths, Converter={StaticResource Vis}}" />
+                                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                                                                Visibility="{Binding HasStatusNote, Converter={StaticResource Vis}}">
+                                                        <TextBlock Style="{StaticResource Icon}" Text="&#xE7BA;" FontSize="12" Margin="0,0,7,0"
+                                                                   Foreground="{DynamicResource CautionBrush}" VerticalAlignment="Top" />
+                                                        <TextBlock Text="{Binding StatusNote}" TextWrapping="Wrap" MaxWidth="560"
+                                                                   Foreground="{DynamicResource CautionBrush}" />
+                                                    </StackPanel>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,10,0,0" Padding="12,6"
+                                                            Command="{Binding DataContext.RestartAsAdminCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            Visibility="{Binding ShowAdminButton, Converter={StaticResource Vis}}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Style="{StaticResource Icon}" Text="&#xE7EF;" FontSize="12" Margin="0,0,8,0" />
+                                                            <TextBlock Text="{Binding [RunAsAdmin], Source={x:Static l:Loc.I}}" />
+                                                        </StackPanel>
+                                                    </Button>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,18,0">
                                                     <TextBlock Text="{Binding SizeText}" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" TextAlignment="Right" />
                                                     <TextBlock Text="{Binding FilesText}" Style="{StaticResource Faint}" TextAlignment="Right" />
                                                 </StackPanel>
-                                                <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
+                                                <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding IsSelected}" VerticalAlignment="Center"
+                                                          IsEnabled="{Binding IsActionable}" AutomationProperties.Name="{Binding Name}" />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -596,6 +797,13 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource Icon}" Text="&#xE8A5;" FontSize="15" Margin="0,0,9,0" />
                                 <TextBlock Text="{Binding [ViewLargeFiles], Source={x:Static l:Loc.I}}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource DockItem}" GroupName="view" AutomationProperties.Name="{Binding [ViewTypes], Source={x:Static l:Loc.I}}"
+                                     IsChecked="{Binding SelectedView, Converter={StaticResource Eq}, ConverterParameter=3}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xEB05;" FontSize="15" Margin="0,0,9,0" />
+                                <TextBlock Text="{Binding [ViewTypes], Source={x:Static l:Loc.I}}" VerticalAlignment="Center" />
                             </StackPanel>
                         </RadioButton>
                         <Border Width="1" Margin="6,10" Background="{DynamicResource SubtleBorderBrush}" />
